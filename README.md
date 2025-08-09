@@ -11,7 +11,12 @@ The Music Player allows users to:
 - View song details like title and artist
 - Understand the use of JavaScript array and string manipulation methods in a real-world example
 
-## 📷 Preview
+## 📷 New Version Preview
+
+[Music Player Preview](./new-music-player-preview.webp)
+[Music Player Mobile Preview](./new-music-player-mobile-preview.webp)
+
+## 📷 Old Version Preview
 
 [Music Player Preview](./preview.webp)
 
