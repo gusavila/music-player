@@ -13,12 +13,12 @@ The Music Player allows users to:
 
 ## 📷 New Version Preview
 
-[Music Player Preview](./new-music-player-preview.webp)
-[Music Player Mobile Preview](./new-music-player-mobile-preview.webp)
+![Music Player Preview](./new-music-player-preview.webp)
+
 
 ## 📷 Old Version Preview
 
-[Music Player Preview](./preview.webp)
+![Music Player Preview](./preview.webp)
 
 ## 💻 Technologies Used
 - **HTML5**
