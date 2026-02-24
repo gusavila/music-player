@@ -1,155 +1,144 @@
 import Player from "./components/Player";
 import Playlist from "./components/Playlist";
 import allSongs from "./data/allSongs";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 
 function App() {
+  const audioRef = useRef(new Audio());
   const [toggleShuffle, setToggleShuffle] = useState(false);
-  const [togglePlayBtn, setTogglePlayBtn] = useState(true);
-  const audio = new Audio();
-
-  let userData = {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [userData, setUserData] = useState({
     songs: allSongs,
     currentSong: null,
     songCurrentTime: 0,
-  };
-
-  const handlePlaySong = async (id) => {
+  })
   
-    const song = userData?.songs.find((song) => song.id === id);
-    audio.src = song.src;
-    audio.title = song.title;
 
-    if (userData?.currentSong === null || userData?.currentSong.id !== song.id) {
-      audio.currentTime = 0;
+  // ================= PLAY SONG =================
+  const handlePlaySong = (id) => {
+    const song = userData.songs.find((song) => song.id === id);
+    if(!song) return;
+
+    audioRef.current.src = song.src;
+    audioRef.current.title = song.title;
+
+    if (!userData.currentSong || userData.currentSong.id !== song.id) {
+      audioRef.current.currentTime = 0;
     } else {
-      audio.currentTime = userData?.songCurrentTime;
+      audioRef.current.currentTime = userData.songCurrentTime;
     }
-    userData.currentSong = song;
+
+    setUserData(prev => ({
+      ...prev,
+      currentSong: song
+    }));
 
     
-    highlightCurrentSong();
 
-    setPlayerDisplay();
-    setPlayButtonAccessibleText();
-    audio.play();
-    setTogglePlayBtn(!togglePlayBtn);
+    setIsPlaying(true);
+    audioRef.current.play();
   }
 
-  const highlightCurrentSong = () => {
-    const playlistSongElements = document.querySelectorAll(".playlist-song");
-    const songToHighlight = document.getElementById(
-      `song-${userData?.currentSong?.id}`
-    );
-
-    playlistSongElements.forEach((songEl) => {
-      songEl.removeAttribute("aria-current");
-    });
-
-    if (songToHighlight) songToHighlight.setAttribute("aria-current", "true");
-  };
-
-  const setPlayerDisplay = () => {
-    const playingSong = document.getElementById("player-song-title");
-    const songArtist = document.getElementById("player-song-artist");
-    const currentTitle = userData?.currentSong?.title;
-    const currentArtist = userData?.currentSong?.artist;
-
-    playingSong.textContent = currentTitle ? currentTitle : "";
-    songArtist.textContent = currentArtist ? currentArtist : "";
-  };
-
-  const setPlayButtonAccessibleText = () => {
-    const playButton = document.getElementById("play");
-    const song = userData?.currentSong || userData?.songs[0];
-
-    playButton.setAttribute(
-      "aria-label",
-      song?.title ? `Play ${song.title}` : "Play"
-    );
-  };
-
-  const handlePlayBtn = async () => {
-    if (userData?.currentSong === null) {
-      handlePlaySong(userData?.songs[0].id);
+  // ============== PLAY BUTTON =============
+  const handlePlayBtn = () => {
+    if (!userData.currentSong) {
+      handlePlaySong(userData.songs[0].id);
     } else {
-      handlePlaySong(userData?.currentSong.id);
+      handlePlaySong(userData.currentSong.id);
     }
   }
 
-  const handlePauseBtn  = async () => {
-    userData.songCurrentTime = audio.currentTime;
-    audio.pause();
+  // ================ PAUSE =================
+  const handlePauseBtn = () => {
+    setUserData(prev => ({
+      ...prev,
+      songCurrentTime: audioRef.current.currentTime
+    }))
 
-    setTogglePlayBtn(!togglePlayBtn);
+    audioRef.current.pause();
+    setIsPlaying(false);
   };
 
+  // ================= NEXT =================
   const handlePlayNextSong = () => {
-    if (userData?.currentSong === null) {
-      handlePlaySong(userData?.songs[0].id);
-    } else {
-      const currentSongIndex = getCurrentSongIndex();
-      const nextSong = userData?.songs[currentSongIndex + 1];
+    if (!userData.currentSong) {
+      handlePlaySong(userData.songs[0].id);
+      return;
+    }
 
+    const currentIndex = userData.songs.indexOf(userData.currentSong);
+    const nextSong = userData.songs[currentIndex + 1];
+
+    if(nextSong) {
       handlePlaySong(nextSong.id);
     }
   };
 
+  // ================= PREVIOUS =================
   const handlePlayPreviousSong = () => {
-    if (userData?.currentSong === null) return;
-    else {
-      const currentSongIndex = getCurrentSongIndex();
-      const previousSong = userData?.songs[currentSongIndex - 1];
+    if (!userData.currentSong) return;
+    
 
+    const currentIndex = userData.songs.indexOf(userData.currentSong);
+    const previousSong = userData?.songs[currentIndex - 1];
+
+    if (previousSong) {
       handlePlaySong(previousSong.id);
     }
   };
 
+  // ================= SHUFFLE =================
   const handleShuffleBtn = () => {
-    userData?.songs.sort(() => Math.random() - 0.5);
-    userData.currentSong = null;
-    userData.songCurrentTime = 0;
+    setUserData(prev => ({
+    ...prev,
+    songs: [...prev.songs].sort(() => Math.random() - 0.5),
+    currentSong: null,
+    songCurrentTime: 0
+  }));
 
-    setToggleShuffle(() => !toggleShuffle);
-
+    setToggleShuffle((prev) => !prev);
   };
 
+  // ================= DELETE =================
   const handleDeleteSong = (id) => {
     if (userData?.currentSong?.id === id) {
-      userData.currentSong = null;
-      userData.songCurrentTime = 0;
+      setUserData(prev => ({
+        ...prev,
+        currentSong: null,
+        songCurrentTime: 0
+      })) 
 
       handlePauseBtn();
       setPlayerDisplay();
     }
 
-    userData.songs = userData?.songs.filter((song) => song.id !== id);
+    setUserData(prev => ({
+      ...prev,
+      songs: prev.songs.filter(song => song.id !== id)
+    }));
+
     renderSongs(userData?.songs);
-    highlightCurrentSong();
-    setPlayButtonAccessibleText();
-
   };
-
-  const getCurrentSongIndex = () => userData?.songs.indexOf(userData?.currentSong);
-
-
 
   return (
     <div className="container">
       <Player
+        currentSong={userData.currentSong}
         onPlay={handlePlayBtn}
         onPause={handlePauseBtn}
         onNext={handlePlayNextSong}
         onPrevious={handlePlayPreviousSong}
-        onDelete={handleDeleteSong}
         onShuffle={handleShuffleBtn}
         onToggleShuffle={toggleShuffle}
-        onTogglePlayBtn={togglePlayBtn}
+        onTogglePlayBtn={isPlaying}
       />
       <Playlist
         songs={userData.songs}
-        onPlay={handlePlaySong} />
+        onPlay={handlePlaySong}
+        onDelete={handleDeleteSong} 
+        currentSong={userData.currentSong}
+      />
     </div>
   )
 }

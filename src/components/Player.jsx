@@ -1,4 +1,4 @@
-function Player({ onPause, onPlay, onNext, onPrevious, onShuffle, onToggleShuffle, onTogglePlayBtn }) {
+function Player({ currentSong, onPause, onPlay, onNext, onPrevious, onShuffle, onToggleShuffle, onTogglePlayBtn }) {
     return (
         <div className="player">
             <div className="player-bar">
@@ -13,8 +13,8 @@ function Player({ onPause, onPlay, onNext, onPrevious, onShuffle, onToggleShuffl
                 </div>
                 <div className="player-display">
                     <div className="player-display-song-artist">
-                        <p id="player-song-title"></p>
-                        <p id="player-song-artist"></p>
+                        <p id="player-song-title">{currentSong?.title || ""}</p>
+                        <p id="player-song-artist">{currentSong?.artist || ""}</p>
                     </div>
                     <div className="player-buttons">
                         <button id="previous" className="previous" aria-label="Previous" onClick={() => onPrevious()}>
@@ -29,28 +29,29 @@ function Player({ onPause, onPlay, onNext, onPrevious, onShuffle, onToggleShuffl
                                     height="18.5453"
                                     transform="matrix(-1 0 0 1 4.63633 0)" /></svg>
                         </button>
-                        <button id="play" className="play" aria-label="Play" onClick={() => onPlay()} >
-                            <svg
-                                width="17"
-                                height="19"
-                                viewBox="0 0 17 19"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            > <path d="M0 0L16.1852 9.5L1.88952e-07 19L0 0Z" /></svg>
-                        </button>
 
-                        <button id="pause" className="pause" aria-label="Pause" onClick={() => onPause()}>
-                            <svg
-                                width="17"
-                                height="19"
-                                viewBox="0 0 17 19"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                style={{ fill: "#ec4a4a" }}
-                            ><path d="M0 6.54013e-07H4.75V19H0V6.54013e-07Z" /> <path d="M11.4 0H16.15V19H11.4V0Z" /></svg>
-                        </button>
-
-
+                        {onTogglePlayBtn ?
+                            <button id="pause" className="pause" aria-label="Pause" onClick={() => onPause()}>
+                                <svg
+                                    width="17"
+                                    height="19"
+                                    viewBox="0 0 17 19"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    style={{ fill: "#ec4a4a" }}
+                                ><path d="M0 6.54013e-07H4.75V19H0V6.54013e-07Z" /> <path d="M11.4 0H16.15V19H11.4V0Z" /></svg>
+                            </button>
+                            :
+                            <button id="play" className="play" aria-label="Play" onClick={() => onPlay()} >
+                                <svg
+                                    width="17"
+                                    height="19"
+                                    viewBox="0 0 17 19"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                > <path d="M0 0L16.1852 9.5L1.88952e-07 19L0 0Z" /></svg>
+                            </button>
+                        }
 
                         <button id="next" className="next" aria-label="Next" onClick={() => onNext()}>
                             <svg
