@@ -4,7 +4,7 @@ A simple and interactive music player built as part of the [FreeCodeCamp JavaScr
 This project represents the evolution from a vanilla JavaScript DOM-based implementation to a declarative React component architecture.
 
 🚀 Live Demo
-https://gustavoavila.github.io/music-player/
+https://gusavila.github.io/music-player/
 
 ##  Project Overview
 
