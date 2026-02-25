@@ -3,7 +3,7 @@
 :root {
   /* colors */
   --darker-color: #646464;
-  --dark-color: #8a8a8a;
+  --lightgrey: #bebebe;
   --light-color: #f7f7f7;
   --lighter-color: #ffffff;
   --highlight-color: #ec4a4a;
@@ -178,14 +178,33 @@ button {
   box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.1);
 }
 
+.playlist-song button {
+  color: var(--darker-color);
+}
+
+.playlist-song button circle {
+  fill: var(--lightgrey);
+}
+
+.playlist-song button path {
+  fill: var(--lighter-color);
+}
+
 .playlist-song.active {
-  color: var(--lighter-color);
   background-color: var(--highlight-color);
   transition: all 0.3s ease-in-out;
 }
 
 .playlist-song.active button {
   color: var(--lighter-color);
+}
+
+.playlist-song.active button circle {
+  fill: var(--light-color);
+}
+
+.playlist-song.active button path{
+  fill: var(--lightgrey);
 }
 
 .playlist-song-info {
@@ -237,13 +256,9 @@ button {
   height: 20px;
 }
 
-.playlist-song-delete circle {
-  fill: var(--dark-color);
-}
-
 .playlist-song-delete:hover circle,
 .playlist-song-delete:focus circle {
-  fill: #ff0000;
+  fill: var(--highlight-color);
   transition: all 0.3s;
 }
 
@@ -269,7 +284,7 @@ button {
     padding: 5px 6px;
     overflow-y: scroll;
     overflow-x: hidden;
-    scrollbar-color: var(--dark-color) var(--light-color);
+    scrollbar-color: var(--lightgrey) var(--light-color);
     scrollbar-width: thin;
   }
 
@@ -282,7 +297,7 @@ button {
   }
 
   #playlist-songs::-webkit-scrollbar-thumb {
-    background: var(--dark-color);
+    background: var(--lightgrey);
   }
 
   h1 {
