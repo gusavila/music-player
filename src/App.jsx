@@ -3,22 +3,20 @@ import Playlist from "./components/Playlist";
 import allSongs from "./data/allSongs";
 import { useState, useRef } from "react";
 
-
 function App() {
   const audioRef = useRef(new Audio());
-  const [toggleShuffle, setToggleShuffle] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [userData, setUserData] = useState({
     songs: allSongs,
     currentSong: null,
     songCurrentTime: 0,
-  })
-  
+  });
 
   // ================= PLAY SONG =================
   const handlePlaySong = (id) => {
     const song = userData.songs.find((song) => song.id === id);
-    if(!song) return;
+    if (!song) return;
 
     audioRef.current.src = song.src;
     audioRef.current.title = song.title;
@@ -29,16 +27,14 @@ function App() {
       audioRef.current.currentTime = userData.songCurrentTime;
     }
 
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
-      currentSong: song
+      currentSong: song,
     }));
-
-    
 
     setIsPlaying(true);
     audioRef.current.play();
-  }
+  };
 
   // ============== PLAY BUTTON =============
   const handlePlayBtn = () => {
@@ -47,14 +43,14 @@ function App() {
     } else {
       handlePlaySong(userData.currentSong.id);
     }
-  }
+  };
 
   // ================ PAUSE =================
   const handlePauseBtn = () => {
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
-      songCurrentTime: audioRef.current.currentTime
-    }))
+      songCurrentTime: audioRef.current.currentTime,
+    }));
 
     audioRef.current.pause();
     setIsPlaying(false);
@@ -67,10 +63,14 @@ function App() {
       return;
     }
 
-    const currentIndex = userData.songs.indexOf(userData.currentSong);
-    const nextSong = userData.songs[currentIndex + 1];
+    const currentIndex = userData.songs.findIndex(
+      (song) => song.id === userData.currentSong.id,
+    );
+    const nextSong = isShuffle
+      ? userData.songs[Math.floor(Math.random() * userData.songs.length)]
+      : userData.songs[currentIndex + 1];
 
-    if(nextSong) {
+    if (nextSong) {
       handlePlaySong(nextSong.id);
     }
   };
@@ -78,7 +78,6 @@ function App() {
   // ================= PREVIOUS =================
   const handlePlayPreviousSong = () => {
     if (!userData.currentSong) return;
-    
 
     const currentIndex = userData.songs.indexOf(userData.currentSong);
     const previousSong = userData?.songs[currentIndex - 1];
@@ -90,32 +89,25 @@ function App() {
 
   // ================= SHUFFLE =================
   const handleShuffleBtn = () => {
-    setUserData(prev => ({
-    ...prev,
-    songs: [...prev.songs].sort(() => Math.random() - 0.5),
-    currentSong: null,
-    songCurrentTime: 0
-  }));
-
-    setToggleShuffle((prev) => !prev);
+    setIsShuffle((prev) => !prev);
   };
 
   // ================= DELETE =================
   const handleDeleteSong = (id) => {
     if (userData?.currentSong?.id === id) {
-      setUserData(prev => ({
+      setUserData((prev) => ({
         ...prev,
         currentSong: null,
-        songCurrentTime: 0
-      })) 
+        songCurrentTime: 0,
+      }));
 
       handlePauseBtn();
       setPlayerDisplay();
     }
 
-    setUserData(prev => ({
+    setUserData((prev) => ({
       ...prev,
-      songs: prev.songs.filter(song => song.id !== id)
+      songs: prev.songs.filter((song) => song.id !== id),
     }));
 
     renderSongs(userData?.songs);
@@ -130,17 +122,17 @@ function App() {
         onNext={handlePlayNextSong}
         onPrevious={handlePlayPreviousSong}
         onShuffle={handleShuffleBtn}
-        onToggleShuffle={toggleShuffle}
+        onToggleShuffle={isShuffle}
         onTogglePlayBtn={isPlaying}
       />
       <Playlist
         songs={userData.songs}
         onPlay={handlePlaySong}
-        onDelete={handleDeleteSong} 
+        onDelete={handleDeleteSong}
         currentSong={userData.currentSong}
       />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

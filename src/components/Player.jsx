@@ -2,7 +2,7 @@ function Player({ currentSong, onPause, onPlay, onNext, onPrevious, onShuffle, o
     return (
         <div className="player">
             <div className="player-bar">
-                <h1 className="fcc-title">FreeCodeCamp Music</h1>
+                <h1 className="fcc-title">freeCodeCamp Music</h1>
             </div>
             <div className="player-content">
                 <div className="player-album-art">
